@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Only For You</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Georgia', serif;
+}
+
+body{
+    background:linear-gradient(to bottom,#0f0c29,#302b63,#24243e);
+    color:#fff;
+    overflow-x:hidden;
+}
+
+/* FLOATING HEARTS */
+.hearts{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+}
+.heart-float{
+    position:absolute;
+    bottom:-20px;
+    font-size:18px;
+    opacity:0.35;
+    animation:floatUp linear infinite;
+}
+@keyframes floatUp{
+    from{transform:translateY(0);opacity:0.4}
+    to{transform:translateY(-120vh);opacity:0}
+}
+
+/* PASSWORD */
+#lock{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:40px 20px;
+    position:relative;
+    z-index:1;
+}
+#lock h1{font-size:2.4rem;margin-bottom:20px}
+#lock p{font-size:1.1rem;line-height:1.8;max-width:600px;margin-bottom:25px}
+#lock input{
+    padding:14px 18px;
+    border-radius:30px;
+    border:none;
+    outline:none;
+    font-size:1rem;
+    width:230px;
+    text-align:center;
+    box-shadow:0 0 22px rgba(255,182,193,0.6);
+}
+#lock input:focus{box-shadow:0 0 34px rgba(255,182,193,0.9)}
+
+/* BUTTON */
+button{
+    margin-top:25px;
+    padding:13px 36px;
+    font-size:1rem;
+    border:none;
+    border-radius:30px;
+    background:#ffb6c1;
+    color:#000;
+    cursor:pointer;
+    transition:0.3s;
+    position:relative;
+    overflow:hidden;
+}
+button:hover{transform:scale(1.05)}
+button::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(255,255,255,0.4);
+    transform:translateX(-100%);
+    transition:0.4s;
+}
+button:hover::after{transform:translateX(100%)}
+
+#error{margin-top:15px;font-size:0.95rem;color:#ffd1dc}
+
+/* SHAKE */
+.shake{animation:shake 0.4s}
+@keyframes shake{
+    0%{transform:translateX(0)}
+    25%{transform:translateX(-5px)}
+    50%{transform:translateX(5px)}
+    75%{transform:translateX(-5px)}
+    100%{transform:translateX(0)}
+}
+
+/* MAIN CONTENT */
+#content{display:none;position:relative;z-index:1}
+
+section{
+    min-height:100vh;
+    padding:60px 25px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+.fade{
+    opacity:0;
+    transform:translateY(40px);
+    transition:1.2s ease;
+}
+.fade.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+h1{font-size:2.4rem;margin-bottom:25px}
+p{
+    font-size:1.15rem;
+    line-height:1.9;
+    max-width:750px;
+    margin-bottom:15px;
+    opacity:0.95;
+}
+
+.heart{
+    font-size:2.6rem;
+    animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+    0%{transform:scale(1)}
+    50%{transform:scale(1.25)}
+    100%{transform:scale(1)}
+}
+
+/* MUSIC */
+audio{
+    margin-top:20px;
+    width:260px;
+    filter:drop-shadow(0 0 10px rgba(255,182,193,0.6));
+}
+
+/* GALLERY */
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:15px;
+    margin-top:30px;
+    max-width:800px;
+}
+.gallery img{
+    width:100%;
+    border-radius:18px;
+    filter:blur(6px);
+    opacity:0;
+    transform:scale(0.9);
+    transition:1.2s ease;
+}
+.gallery img.show{
+    filter:blur(0);
+    opacity:1;
+    transform:scale(1);
+}
+.gallery-video {
+    width: 100%;            /* same size as images */
+    border-radius: 18px;    /* rounded corners */
+    opacity: 0;             /* start hidden */
+    transform: scale(0.9);  /* start slightly smaller */
+    transition: 1.2s ease;  /* same smooth animation */
+}
+
+.gallery-video.show {
+    opacity: 1;             /* appear */
+    transform: scale(1);    /* normal size */
+}
+</style>
+</head>
+
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<!-- PASSWORD -->
+<div id="lock">
+    <h1>This is only for you</h1>
+    <p>
+        Something I made with honesty.<br>
+        Something I did to make you stop.
+    </p>
+    <input type="password" id="password" placeholder="The propsal date">
+    <button onclick="unlock()">Enter</button>
+    <div id="error"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="content">
+
+<section class="fade">
+    <h1>Hey my cutiee…</h1>
+    <p id="typeText"></p>
+    <button onclick="nextSection()">Continue</button>
+</section>
+
+<section class="fade">
+    <h1>I messed up a hell lot like everytime.</h1>
+    <p>
+        I won’t defend myself, not anymore.<br>
+        I won’t minimize what you felt.<br><br>
+        I hurt you — and I take responsibility,now you might say ki responsibility leke kya hoga 
+        i me isse tera hurt to kam nhi kr paunga but atleast maybe idk yr kya hoga tu khud dekh lio 
+        kuch hota hai to ahhh😭😭 noo noo lets do it again pata ni yr me bss ro ra hu and idk ki me kya likhu so
+        maybe me khud ko accountable maan ra hu ye jaan ke tujhe thoda better feel ho maybe teko esa feel nah
+        ho that i am running away.
+    </p>
+    <button onclick="nextSection()">Continue</button>
+</section>
+
+<section class="fade">
+    <h1>This is something i recorded for you</h1>
+    <p>
+        I recorded this thinking about us.<br>
+        Listen only if you feel ready.
+    </p>
+    
+    <audio controls>
+        <source src="audios/Vc plus song.m4a" type="audio/mpeg">
+    </audio>
+
+    <audio controls>
+        <source src="audios/Abhi nah jao chodh kr.m4a" type="audio/mpeg">   
+    </audio>
+    
+    <audio controls>
+          <source src="audios/Last.m4a" type="audio/mpeg">
+    </audio>
+
+    <button onclick="nextSection()">Continue</button>
+</section>
+
+<section class="fade">
+    <h1>Usss and out beautiful ubad khabad journey till this point</h1>
+    <p>
+        These moments matter to me the most upar likha ki me ro ra tha voh inhi ko dekh kr tha
+        teri bhot yaad aari hai ab, tg voh locked folder me hai agr tera jawab iske baad bhi no
+        hua and nothing worked out you really left me, tb toh agr voh mere saamne aati me toh roz ro 
+        ra hounga 🙃🫠.<br>
+        Every single one is really close to my heart esp your silly ones.
+    </p>
+
+    <div class="gallery">
+       <img src="images/pic1.jpg">
+    <img src="images/pic2.jpg">
+    <img src="images/pic3.jpg">
+    <img src="images/pic4.jpg">
+    <img src="images/pic5.jpg">
+    <img src="images/pic6.jpg">
+    <img src="images/pic7.jpg">
+    <img src="images/pic8.jpg">
+    <img src="images/pic9.jpg">
+    <img src="images/pic10.jpg">
+
+
+    <video controls class="gallery-video">
+        <source src="videos/video1.mp4" type="video/mp4">
+    </video>
+    <video controls class="gallery-video">
+        <source src="videos/video2.mp4" type="video/mp4">
+    </video>
+    <video controls class="gallery-video">
+        <source src="videos/video3.mp4" type="video/mp4">
+    </video>
+    <video controls class="gallery-video">
+        <source src="videos/video4.mp4" type="video/mp4">
+    </video>
+    <video controls class="gallery-video">
+        <source src="videos/video5.mp4" type="video/mp4">
+    </video>
+    </div>
+
+    <button onclick="revealPhotos(); nextSection()">Continue</button>
+</section>
+
+<section class="fade">
+    <h1>No pressure</h1>
+    <p>
+        You don’t owe me forgiveness.<br>
+        You don’t owe me anything anymore, answers, apologies, love, care or, anything.<br><br>
+        I just hope you don’t close the door forever.
+    </p>
+    <button onclick="nextSection()">Continue</button>
+</section>
+
+<section class="fade">
+    <h1 class="heart">❤️</h1>
+    <p>
+        If there’s even a small part of you that still feels something… That still wants me... That 
+        is still willing to fight for us our memories the ones we have made and the ones we would have made 
+        plz come back, I hope mene sach me nhi khoya tujhe, have i really lost you bachha?? your aksh did 
+        he loose you nhi rakh paya voh tujhe sambhal ke, kr dia nah usne sab kharab <br>
+        I'm sorry got lost. Hn so I’m here. Honestly and Patiently waiting for you or your final reply🙃🥺.
+
+    </p>
+</section>
+
+</div>
+
+<script>
+/* PASSWORD */
+const correctPassword="110625"; // CHANGE THIS
+
+function unlock(){
+    const input=document.getElementById("password");
+    const error=document.getElementById("error");
+    if(input.value===correctPassword){
+        document.getElementById("lock").style.display="none";
+        document.getElementById("content").style.display="block";
+        showSection(0);
+        typeWriter();
+    }else{
+        error.innerText="That’s not it. Take your time.";
+        input.classList.add("shake");
+        setTimeout(()=>input.classList.remove("shake"),400);
+    }
+}
+
+/* FLOATING HEARTS */
+const hearts=document.getElementById("hearts");
+function createHeart(){
+    const h=document.createElement("div");
+    h.className="heart-float";
+    h.innerText="❤";
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=(6+Math.random()*6)+"s";
+    hearts.appendChild(h);
+    setTimeout(()=>h.remove(),12000);
+}
+setInterval(createHeart,700);
+
+/* SECTIONS */
+let index = 0;
+const sections = document.querySelectorAll(".fade");
+
+function showSection(i) {
+    sections[i].classList.add("show");
+    sections[i].scrollIntoView({ behavior: "smooth" });
+
+   const gallery = sections[i].querySelector(".gallery");
+if (gallery) {
+    const items = gallery.querySelectorAll("img, video"); // <-- images AND videos
+    items.forEach((item, idx) => {
+        setTimeout(() => item.classList.add("show"), idx * 400); // 400ms delay between items
+    });
+}
+}
+
+function nextSection() {
+    index++;
+    if (index < sections.length) {
+        showSection(index);
+    }
+}
+
+/* TYPEWRITER */
+const text="I don’t know how to fix everything with words alone.\nBut I need you to read this — slowly.";
+let i=0;
+function typeWriter(){
+    if(i<text.length){
+        document.getElementById("typeText").innerHTML+=
+        text.charAt(i)==="\n"?"<br>":text.charAt(i);
+        i++;
+        setTimeout(typeWriter,40);
+    }
+}
+
+/* PHOTO REVEAL */
+function revealPhotos(){
+    document.querySelectorAll(".gallery img").forEach((img,idx)=>{
+        setTimeout(()=>img.classList.add("show"),idx*300);
+    });
+}
+</script>
+
+</body>
+</html>
